@@ -3,6 +3,13 @@ import TodoListTemplate from "./TodoListTemplate";
 import Form from "./Form";
 import TodoItemList from "./TodoItemList";
 
+const init = () => {
+  if (!localStorage.getItem("classTodos")) {
+    localStorage.setItem("classTodos", "[]");
+  }
+  return localStorage.getItem("classTodos");
+};
+
 class Class extends Component {
   // state = {
   //   input: '',
@@ -14,7 +21,7 @@ class Class extends Component {
   // }
   state = {
     input: "",
-    classTodos: JSON.parse(localStorage.getItem("classTodos")),
+    classTodos: JSON.parse(init()),
   };
 
   loadTodos = () => {
@@ -29,12 +36,14 @@ class Class extends Component {
         id: 0,
         text: this.state.input,
         checked: false,
+        status: "text",
       });
     } else {
       classTodos.push({
         id: classTodos[classTodos.length - 1].id + 1,
         text: this.state.input,
         checked: false,
+        status: "text",
       });
     }
 
@@ -57,9 +66,8 @@ class Class extends Component {
   deleteItem = (id) => {
     let classTodos = JSON.parse(localStorage.getItem("classTodos"));
     classTodos = classTodos.filter((classTodo) => classTodo.id !== id);
-    classTodos = JSON.stringify(classTodos);
-
     this.setState({ classTodos });
+    classTodos = JSON.stringify(classTodos);
     localStorage.setItem("classTodos", classTodos);
     this.loadTodos();
   };
@@ -67,8 +75,44 @@ class Class extends Component {
   checkItem = (id) => {
     let classTodos = JSON.parse(localStorage.getItem("classTodos"));
     classTodos = classTodos.map((classTodo) => {
-      if (classTodo.id === id) {
+      if (classTodo.id === id && classTodo.status === "text") {
         classTodo.checked = !classTodo.checked;
+        return classTodo;
+      } else {
+        return classTodo;
+      }
+    });
+
+    this.setState({ classTodos });
+    classTodos = JSON.stringify(classTodos);
+    localStorage.setItem("classTodos", classTodos);
+    this.loadTodos();
+  };
+
+  toggleItemStatus = (id) => {
+    let classTodos = JSON.parse(localStorage.getItem("classTodos"));
+    classTodos = classTodos.map((classTodo) => {
+      if (classTodo.id === id) {
+        if (classTodo.status === "text") {
+        }
+        classTodo.status = classTodo.status === "text" ? "update" : "text";
+        return classTodo;
+      } else {
+        return classTodo;
+      }
+    });
+    this.setState({ classTodos });
+    classTodos = JSON.stringify(classTodos);
+    localStorage.setItem("classTodos", classTodos);
+    this.loadTodos();
+  };
+
+  updateItem = (id, text) => {
+    this.toggleItemStatus(id);
+    let classTodos = JSON.parse(localStorage.getItem("classTodos"));
+    classTodos = classTodos.map((classTodo) => {
+      if (classTodo.id === id) {
+        classTodo.text = text;
         return classTodo;
       } else {
         return classTodo;
@@ -83,7 +127,15 @@ class Class extends Component {
 
   render() {
     const { classTodos } = this.state;
-    const { createItem, onEnter, changeInput, deleteItem, checkItem } = this;
+    const {
+      createItem,
+      onEnter,
+      changeInput,
+      deleteItem,
+      checkItem,
+      toggleItemStatus,
+      updateItem,
+    } = this;
     return (
       <TodoListTemplate
         form={
@@ -99,6 +151,8 @@ class Class extends Component {
           todos={classTodos}
           deleteItem={deleteItem}
           checkItem={checkItem}
+          toggleItemStatus={toggleItemStatus}
+          updateItem={updateItem}
         />
       </TodoListTemplate>
     );

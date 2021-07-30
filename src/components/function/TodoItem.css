@@ -16,6 +16,10 @@
   opacity: 1;
 }
 
+.todo-item:hover .update {
+  opacity: 1;
+}
+
 /* todo-item 사이에 윗 테두리 */
 .todo-item + .todo-item {
   border-top: 1px solid #f1f3f5;
@@ -25,6 +29,10 @@
   margin-right: 1rem;
   color: #e64980;
   font-weight: 600;
+  opacity: 0;
+}
+
+.update {
   opacity: 0;
 }
 
